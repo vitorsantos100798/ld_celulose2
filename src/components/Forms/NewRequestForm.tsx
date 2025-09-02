@@ -91,6 +91,7 @@ export function NewRequestForm() {
           id: `item-${Date.now()}-${index}`,
         })),
         totalValue: totalValue > 0 ? totalValue : undefined,
+        status: 'submitted',
       });
 
       addNotification({
