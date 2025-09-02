@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  
+  body {
+    @apply bg-ld-gray-50 text-ld-gray-800;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-ld-green-500 hover:bg-ld-green-600 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 shadow-ld;
+  }
+  
+  .btn-secondary {
+    @apply bg-ld-gray-100 hover:bg-ld-gray-200 text-ld-gray-800 font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+  }
+  
+  .btn-danger {
+    @apply bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+  }
+  
+  .card {
+    @apply bg-white rounded-xl shadow-ld p-6 border border-ld-gray-100;
+  }
+  
+  .input-field {
+    @apply w-full px-3 py-2 border border-ld-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-ld-green-500 focus:border-transparent transition-all duration-200;
+  }
+  
+  .status-badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+  
+  .status-draft {
+    @apply bg-ld-gray-100 text-ld-gray-800;
+  }
+  
+  .status-pending {
+    @apply bg-ld-gold text-ld-gray-800;
+  }
+  
+  .status-approved {
+    @apply bg-ld-green-100 text-ld-green-800;
+  }
+  
+  .status-rejected {
+    @apply bg-red-100 text-red-800;
+  }
+}
