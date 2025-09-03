@@ -42,6 +42,15 @@ export function NewRequestForm() {
   const { createRequest, addNotification } = useApp();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [attachments, setAttachments] = useState<File[]>([]);
+  const [searchHistoryModal, setSearchHistoryModal] = useState<{
+    isOpen: boolean;
+    itemIndex: number;
+    searchTerm: string;
+  }>({
+    isOpen: false,
+    itemIndex: -1,
+    searchTerm: ''
+  });
 
   const {
     register,
@@ -49,7 +58,8 @@ export function NewRequestForm() {
     control,
     formState: { errors, isValid },
     watch,
-    reset
+    reset,
+    setValue
   } = useForm<RequestFormData>({
     resolver: zodResolver(requestSchema),
     defaultValues: {
@@ -122,6 +132,44 @@ export function NewRequestForm() {
     if (fields.length > 1) {
       remove(index);
     }
+  };
+
+  const handleSearchHistory = (itemIndex: number) => {
+    const currentItem = watchedItems[itemIndex];
+    const searchTerm = currentItem.description || currentItem.specifications || '';
+    
+    setSearchHistoryModal({
+      isOpen: true,
+      itemIndex,
+      searchTerm: searchTerm.trim()
+    });
+  };
+
+  const closeSearchHistoryModal = () => {
+    setSearchHistoryModal({
+      isOpen: false,
+      itemIndex: -1,
+      searchTerm: ''
+    });
+  };
+
+  const applyHistoryItem = (historyItem: any) => {
+    const { itemIndex } = searchHistoryModal;
+    
+    // Aplicar dados do histórico ao item atual
+    setValue(`items.${itemIndex}.description`, historyItem.description);
+    setValue(`items.${itemIndex}.unit`, historyItem.unit);
+    setValue(`items.${itemIndex}.specifications`, historyItem.specifications);
+    setValue(`items.${itemIndex}.suggestedSupplier`, historyItem.suggestedSupplier);
+    
+    closeSearchHistoryModal();
+    
+    addNotification({
+      type: 'success',
+      title: 'Histórico Aplicado',
+      message: 'Os dados do histórico foram aplicados ao item atual.',
+      read: false
+    });
   };
 
   return (
@@ -297,12 +345,22 @@ export function NewRequestForm() {
                     <label className="block text-sm font-medium text-ld-gray-700 mb-2">
                       Especificações Técnicas
                     </label>
-                    <textarea
-                      {...register(`items.${index}.specifications`)}
-                      className="input-field"
-                      rows={2}
-                      placeholder="Especificações técnicas, marca, modelo, etc."
-                    />
+                    <div className="flex gap-2">
+                      <textarea
+                        {...register(`items.${index}.specifications`)}
+                        className="input-field flex-1"
+                        rows={2}
+                        placeholder="Especificações técnicas, marca, modelo, etc."
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleSearchHistory(index)}
+                        className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors duration-200 flex-shrink-0 self-end"
+                        title="Buscar histórico de requisições similares"
+                      >
+                        Buscar Histórico
+                      </button>
+                    </div>
                   </div>
 
                   <div className="lg:col-span-3">
@@ -517,6 +575,101 @@ export function NewRequestForm() {
           </button>
         </div>
       </form>
+
+      {/* Modal de Busca de Histórico */}
+      {searchHistoryModal.isOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-ld-gray-900">
+                Buscar Histórico de Requisições
+              </h3>
+              <button
+                onClick={closeSearchHistoryModal}
+                className="text-ld-gray-400 hover:text-ld-gray-600 p-1"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-ld-gray-700 mb-2">
+                Termo de Busca
+              </label>
+              <input
+                type="text"
+                value={searchHistoryModal.searchTerm}
+                onChange={(e) => setSearchHistoryModal(prev => ({
+                  ...prev,
+                  searchTerm: e.target.value
+                }))}
+                className="input-field"
+                placeholder="Digite para buscar no histórico..."
+              />
+            </div>
+
+            <div className="space-y-3">
+              <h4 className="font-medium text-ld-gray-700">Resultados do Histórico:</h4>
+              
+              {/* Mock de dados de histórico - em produção seria uma busca real */}
+              {searchHistoryModal.searchTerm ? (
+                <div className="space-y-3">
+                  <div className="border border-ld-gray-200 rounded-lg p-4 hover:bg-ld-gray-50 cursor-pointer"
+                       onClick={() => applyHistoryItem({
+                         description: 'Papel A4 75g',
+                         unit: 'resma',
+                         specifications: 'Papel A4 75g, branco, 500 folhas por resma',
+                         suggestedSupplier: 'Papelaria Central'
+                       })}>
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <p className="font-medium text-ld-gray-900">Papel A4 75g</p>
+                        <p className="text-sm text-ld-gray-600">Unidade: resma</p>
+                        <p className="text-sm text-ld-gray-600">Fornecedor: Papelaria Central</p>
+                      </div>
+                      <button className="px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-sm rounded transition-colors">
+                        Aplicar
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="border border-ld-gray-200 rounded-lg p-4 hover:bg-ld-gray-50 cursor-pointer"
+                       onClick={() => applyHistoryItem({
+                         description: 'Toner HP LaserJet',
+                         unit: 'unidade',
+                         specifications: 'Toner HP LaserJet 26A, compatível com impressoras HP LaserJet Pro',
+                         suggestedSupplier: 'TecnoSupply'
+                       })}>
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <p className="font-medium text-ld-gray-900">Toner HP LaserJet</p>
+                        <p className="text-sm text-ld-gray-600">Unidade: unidade</p>
+                        <p className="text-sm text-ld-gray-600">Fornecedor: TecnoSupply</p>
+                      </div>
+                      <button className="px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-sm rounded transition-colors">
+                        Aplicar
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-8 text-ld-gray-500">
+                  <p>Digite um termo para buscar no histórico de requisições</p>
+                </div>
+              )}
+            </div>
+
+            <div className="mt-6 flex justify-end">
+              <button
+                onClick={closeSearchHistoryModal}
+                className="btn-secondary"
+              >
+                Fechar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
