@@ -24,7 +24,7 @@ export function Layout({ children }: LayoutProps) {
       <div className="flex">
         <Sidebar isOpen={sidebarOpen} onClose={handleSidebarClose} />
         
-        <main className="flex-1 lg:ml-64">
+        <main className="flex-1 lg:ml-0">
           <div className="p-6">
             {children}
           </div>

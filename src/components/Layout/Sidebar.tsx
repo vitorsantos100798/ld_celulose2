@@ -64,7 +64,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       },
       {
         name: 'Rejeitadas',
-        href: '/rejeitadas',
+        href: '/rejeitas',
         icon: XCircle,
         current: false
       }
@@ -117,14 +117,14 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           </div>
 
           {/* Frase institucional */}
-          <div className="px-4 py-3 bg-ld-green-50 border-b border-ld-green-100">
+          <div className="px-4 py-2 bg-ld-green-50 border-b border-ld-green-100">
             <p className="text-xs text-ld-green-700 text-center italic">
               "Gestão inteligente e sustentável de compras para nossa operação"
             </p>
           </div>
 
           {/* Navegação */}
-          <nav className="flex-1 px-4 py-6 space-y-2">
+          <nav className="flex-1 px-3 py-4 space-y-1">
             {navigation.map((item) => (
               <NavLink
                 key={item.name}
@@ -145,7 +145,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           </nav>
 
           {/* Informações do usuário */}
-          <div className="p-4 border-t border-ld-gray-100">
+          <div className="p-3 border-t border-ld-gray-100">
             <div className="flex items-center">
               <div className="w-8 h-8 bg-ld-green-100 rounded-full flex items-center justify-center">
                 <Users size={16} className="text-ld-green-600" />
